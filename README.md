@@ -1,5 +1,13 @@
 A script to convert NeoVim documentation to hyperlinked PDF, using LaTeX
 
+You should generate `tags` under `doc` via Vim or neoVim:
+
+```
+:helptags .
+```
+
+Then use `./mktags.sh` to compress it to text file for generating.
+
 # Vim documentation in PDF format
 
 These scripts create a PDF document containing the documentation that ships
