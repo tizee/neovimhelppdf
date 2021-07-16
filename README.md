@@ -1,4 +1,4 @@
-A script to convert Vim documentation to hyperlinked PDF, using LaTeX
+A script to convert NeoVim documentation to hyperlinked PDF, using LaTeX
 
 # Vim documentation in PDF format
 
@@ -22,8 +22,7 @@ The `contents.txt` file can be used to reorder the text files in the pdf
 or eliminate some entirely. Note that any links into text files that
 are removed will break.
 
-The default `make` command makes a US letter sized PDF. You may also run `make
-a4` or `make ipad` for different PDF sizes.
+The default `make` command makes a US letter sized PDF. You may also run `make a4` or `make ipad` for different PDF sizes.
 
 Latex requires multiple runs for things like generating the table of contents.
 You will have to run `make` twice for everything to work right. For this
