@@ -3,17 +3,10 @@
 set -e
 
 echo Getting vim
-if [[ -d vim ]]; then
-    ( cd vim; git pull )
+if [[ -d neovim ]]; then
+    ( cd neovim; git pull )
 else
-    git clone https://github.com/vim/vim
-fi
-
-echo Getting vim_faq
-if [[ -d vim_faq ]]; then
-    ( cd vim_faq; git pull )
-else
-    git clone https://github.com/chrisbra/vim_faq
+    git clone https://github.com/neovim/neovim.git --depth 1
 fi
 
 if ! [[ -d doc ]]; then
@@ -22,7 +15,5 @@ if ! [[ -d doc ]]; then
 fi
 
 echo Copying files into doc directory
-cp vim/runtime/doc/tags vim/runtime/doc/*.txt vim_faq/doc/vim_faq.txt doc
+cp neovim/runtime/doc/*.txt doc
 
-echo Writing tags.txt
-awk 'BEGIN { ORS=" " } { print $1 }' doc/tags | fold -sw 78 > doc/tags.txt

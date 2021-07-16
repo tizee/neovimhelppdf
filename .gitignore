@@ -1,7 +1,6 @@
 *.pyc
 doc/
-vim/
-vim_faq/
+neovim/
 *.aux
 *.out
 *.log
