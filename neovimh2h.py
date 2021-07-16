@@ -195,5 +195,73 @@ def remove_modeline(lines):
     if RE_MODELINE.match(lines[-1]):
         lines.pop()
 
+class NeoVimH2H(VimH2H):
+    # neovim doc remove faq
+    def to_tex(self, filename, contents):
+        out = [ ]
+
+        inexample = 0
+        filename = str(filename)
+        lines = RE_NEWLINE.split(contents)
+        remove_modeline(lines)
+        for line in lines:
+            line = line.rstrip('\r\n')
+            line_tabs = line
+            line = line.expandtabs()
+            if RE_HRULE.match(line):
+                out.extend((r'\sh{', line, '}', '\n'))
+                continue
+            if inexample == 2:
+                if RE_EG_END.match(line):
+                    inexample = 0
+                    if line[0] == '<': line = line[1:]
+                else:
+                    out.extend((r'\se{', tex_escape[line], '}', '\n'))
+                    continue
+            if RE_EG_START.match(line_tabs):
+                inexample = 1
+                line = line[0:-1]
+            if RE_SECTION.match(line_tabs):
+                m = RE_SECTION.match(line)
+                out.extend((r'\sc{', m.group(0), r'}'))
+                line = line[m.end():]
+            lastpos = 0
+            for match in RE_TAGWORD.finditer(line):
+                pos = match.start()
+                if pos > lastpos:
+                    out.append(tex_escape[line[lastpos:pos]])
+                lastpos = match.end()
+                header, graphic, pipeword, starword, command, opt, ctrl, \
+                        special, title, note, url, word = match.groups()
+                if pipeword is not None:
+                    out.extend((' ', self.maplink(pipeword, 'l'), ' '))
+                elif starword is not None:
+                    out.extend((' \\hypertarget{', self.to_hex(starword), '}{\\st{', tex_escape[starword], '}} '))
+                elif command is not None:
+                    out.extend(('`\\se{', tex_escape[command], '}`'))
+                elif opt is not None:
+                    out.append(self.maplink(opt, 'o'))
+                elif ctrl is not None:
+                    out.append(self.maplink(ctrl, 'k'))
+                elif special is not None:
+                    out.append(self.maplink(special, 's'))
+                elif title is not None:
+                    out.extend(('\\si{', tex_escape[title], '}'))
+                elif note is not None:
+                    out.extend(('\\sn{', tex_escape[note], '}'))
+                elif header is not None:
+                    out.extend(('\\sh{', tex_escape[header[:-1]], '}'))
+                elif graphic is not None:
+                    out.append(tex_escape[graphic[:-2]])
+                elif url is not None:
+                    out.extend(('\\url{', url, '}'))
+                elif word is not None:
+                    out.append(self.maplink(word))
+            if lastpos < len(line):
+                out.append(tex_escape[line[lastpos:]])
+            out.append('\n')
+            if inexample == 1: inexample = 2
+
+        return ''.join(out)
 
 tex_escape = TexEscCache()

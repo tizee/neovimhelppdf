@@ -3,8 +3,9 @@ letter  make letter-sized version
 a4      make a4-sized version
 ipad    make ipad-sized version
 all     make all versions
-update  update vim help and vim-faq from repository
-clean   delete intermediate files
+update  update neovim help from repository
+cleanbuild   delete intermediate files
+cleandoc delete output pdfs
 clobber delete all files
 endef
 export TASKS
@@ -14,15 +15,9 @@ SHELL=/bin/bash
 docdir = doc
 helpfiles = $(wildcard $(docdir)/*.txt)
 
-# If you use this you are going to want to do a `make clean` because
-# it will mess up the dependencies.
-ifeq (no, ${FAQ})
-faq := --no-faq
-endif
-
-letter: vimhelp.pdf
-a4: vimhelp-a4.pdf
-ipad: vimhelp-ipad.pdf
+letter: neovimhelp.pdf
+a4: neovimhelp-a4.pdf
+ipad: neovimhelp-ipad.pdf
 all: letter a4 ipad
 
 update:
@@ -35,14 +30,15 @@ $(docdir):
 	xelatex $<
 
 body.tex: $(helpfiles) $(docdir) contents.txt
-	python3 h2h.py $(faq)
+	python3 neovim.py
 
-clean:
+cleanbuild:
 	-rm body.tex *.log *.aux *.toc *.out
+cleandoc:
 	-rm -r $(docdir)
 
-clobber: clean
-	-rm vimhelp{,-ipad,-a4}.pdf
+clobber: cleanbuild
+	-rm neovimhelp{,-ipad,-a4}.pdf
 
 help:
 	@echo "$$TASKS"
